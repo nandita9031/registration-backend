@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logdevops-login-backend
+  namespace: registration
+  labels:
+    app: logdevops-login-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logdevops-login-backend
+      env: qa
+  template:
+    metadata:
+      labels:
+        app: logdevops-login-backend
+    spec:
+      containers:
+      - name: logdevops-login-backend
+        image: logsdevops/logdevops-pr:1.0.0-SNAPSHOT
+        imagePullPolicy: Always
+        stdin: true
+        tty: true
+        command: [ "/bin/sh", "-c" ]
+        args: [ "java -jar /home/logdevops/demo-1.0.0-SNAPSHOT.jar --spring.config.location=/config/application.properties" ]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config/application.properties
+          subPath: application.properties
+        ports:
+        - containerPort: 9020
+      volumes:
+      - name: config-volume
+        configMap:
+          name: logdevops-login-backend
+  restartPolicy: Always
+
+        
